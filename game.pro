@@ -30,13 +30,15 @@ SOURCES += \
     game.cpp \
     ball.cpp \
     enemy.cpp \
-    player.cpp
+    player.cpp \
+    menubutton.cpp
 
 HEADERS += \
     game.h \
     ball.h \
     enemy.h \
-    player.h
+    player.h \
+    menubutton.h
 
 FORMS +=
 
@@ -45,4 +47,5 @@ qnx: target.path = /tmp/$${TARGET}/bin
 else: unix:!android: target.path = /opt/$${TARGET}/bin
 !isEmpty(target.path): INSTALLS += target
 
-RESOURCES +=
+RESOURCES += \
+    res.qrc

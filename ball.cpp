@@ -4,6 +4,7 @@
 #include "Game.h"
 #include "player.h"
 #include "enemy.h"
+#include <QDebug>
 
 extern Game* game;
 
@@ -11,14 +12,14 @@ Ball::Ball(QGraphicsItem *parent): QObject(), QGraphicsEllipseItem(parent){
     setRect(0, 0, 15, 15);
     QBrush brush;
     brush.setStyle(Qt::SolidPattern);
-    brush.setColor(Qt::red);
+    brush.setColor(Qt::blue);
     setBrush(brush);
 
     xVelocity = 0;
-    yVelocity = -5;
+    yVelocity = -10;
 
-    QTimer* timer = new QTimer();
-    connect(timer,SIGNAL(timeout()),this,SLOT(move()));
+    QTimer * timer = new QTimer();
+    connect(timer, SIGNAL(timeout()), this, SLOT(move()));
     timer->start(15);
 }
 
@@ -34,11 +35,21 @@ void Ball::move(){
     handleBlockCollision();
 
     moveBy(xVelocity,yVelocity);
+
+    if (pos().y() > 600)
+    {
+        game->displayLosing();
+    }
+
+
+    if (game->getEnemiesAmount() < 1) {
+        qDebug() << game->getEnemiesAmount();
+        game->displayWinning();
+    }
 }
 
 void Ball::reverseVelocityIfOutOfBounds(){
     double screenW = game->width();
-    double screenH = game->height();
 
     if (mapToScene(rect().topLeft()).x() <= 0){
         xVelocity = -1 * xVelocity;
@@ -55,9 +66,9 @@ void Ball::reverseVelocityIfOutOfBounds(){
 }
 
 void Ball::handlePaddleCollision(){
-    QList<QGraphicsItem*> cItems = collidingItems();
+    QList<QGraphicsItem *> cItems = collidingItems();
     for (size_t i = 0, n = cItems.size(); i < n; ++i){
-        Player * player= dynamic_cast<Player*>(cItems[i]);
+        Player * player= dynamic_cast<Player *>(cItems[i]);
         if (player){
 
             yVelocity = -1 * yVelocity;
@@ -102,6 +113,8 @@ void Ball::handleBlockCollision(){
             }
 
             game->scene->removeItem(enemy);
+            game->decreaseEnemiesAmount();
+
             delete enemy;
         }
     }
